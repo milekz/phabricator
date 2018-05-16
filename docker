@@ -1,0 +1,40 @@
+version: '2'
+services:
+    mysql:
+        image: mysql:5.7
+        volumes:
+           -  /root/phab_mysql:/var/lib/mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: A3r13ydaa5dbVfgSsf6a
+        command:
+            mysqld --innodb-buffer-pool-size=512M --max_allowed_packet=33654432                                                                                                                                                              --sql-mode=STRICT_ALL_TABLES
+        networks:
+          - mysqldb
+    phabricator:
+        image: redpointgames/phabricator
+        volumes:
+          - /docker/phabricator/repo:/var/repo/
+          - /docker/phabricator/config:/config
+          - /docker/phabricator/sshkeys:/hostkeys           
+        restart: always
+        environment:
+            PHABRICATOR_HOST: ph.xxxx.xxxx
+            PHABRICATOR_HOST_KEYS_PATH: /hostkeys/persisted
+            MYSQL_HOST: mysql
+            MYSQL_USER: root
+            MYSQL_PASS: A3r13ydaa5dbVfgSsf6a
+            SSL_TYPE: letsencrypt
+            SSL_EMAIL: xxx@xxxx.xx
+        depends_on:
+          - mysql
+        ports:
+          - "80:80"
+          - "443:443"
+          - "122:22"
+        networks:
+          - mysqldb
+
+networks:
+  mysqldb:
+
